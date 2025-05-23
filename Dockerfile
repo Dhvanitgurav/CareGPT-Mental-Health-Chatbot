@@ -1,22 +1,21 @@
 FROM python:3.10-slim
 
-# Install system dependencies including gcc and portaudio dev headers
-RUN apt-get update && apt-get install -y \
-    gcc \
-    portaudio19-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc portaudio19-dev && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip
 RUN pip install --upgrade pip
 
-# Copy requirements.txt
+# Copy requirements.txt and install
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install -r requirements.txt
 
-# Copy app code
-COPY . .
+# Copy the CureConnect folder into the image
+COPY CureConnect ./CureConnect
 
-# Run command (change app.py as per your app)
-CMD ["streamlit", "run", "app.py"]
+# Set working directory to CureConnect
+WORKDIR /CureConnect
+
+# Expose Streamlit default port (optional but good)
+EXPOSE 8501
+
+# Run Streamlit app with relative path inside CureConnect
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
