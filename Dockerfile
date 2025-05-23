@@ -1,17 +1,21 @@
 FROM python:3.10-slim
 
-# Install system dependencies for PyAudio
-RUN apt-get update && apt-get install -y portaudio19-dev && rm -rf /var/lib/apt/lists/*
+# Install system dependencies required by PyAudio
+RUN apt-get update && apt-get install -y \
+    portaudio19-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
-WORKDIR /app
+# Upgrade pip
+RUN pip install --upgrade pip
 
-# Copy your project files
-COPY . /app
+# Copy your requirements.txt
+COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Set command to run your app
+# Copy your app files
+COPY . .
+
+# Command to run your app (change as needed)
 CMD ["streamlit", "run", "app.py"]
